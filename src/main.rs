@@ -1,15 +1,17 @@
+use rand::Rng;
+
 fn main() {
-    let name: &str = "Odin";
-    let age: u16 = 20;
-    let height: f32 = 182.2;
-    print_user_information(name,age,height);
+    println!("The dice has rolled: {}!", roll_dice());
+
 }
 
-fn print_user_information(name: &str, age: u16, height: f32) {
-    println!("This persons name is {}, their age is {}, and their height is {}", name, age, height);
-}
 
-fn roll_dice() -> i32 {
-    let dice_roll: i32 = 42;
-    return dice_roll;
+/**
+ *
+ * Returns:
+ *  u8: The number rolled on the dice
+ */
+fn roll_dice() -> u8 {
+    let dice_roll: u8 = rand::rng().random_range(1..=6);
+    dice_roll
 }
