@@ -12,6 +12,20 @@ fn main() {
     }
 }
 
+struct Board {
+    size: u16,
+    snakes: u8,
+    ladders: u8,
+}
+struct Tile {
+    position: u8,
+    snake: bool,
+    ladder: bool,
+}
+
+impl Board {
+
+}
 struct User {
     name: String,
     position: u8,
@@ -30,5 +44,4 @@ fn roll_dice()-> u8 {
     let mut rng = rand::rng();
     rng.random_range(1..=6)
 }
-
 
