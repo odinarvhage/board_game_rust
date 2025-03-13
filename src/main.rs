@@ -12,20 +12,29 @@ fn main() {
     }
 }
 
-struct Board {
-    size: u16,
-    snakes: u8,
-    ladders: u8,
-}
+/*
+ * Struct to represent a tile on the board.
+ * The tile can be a standard, snake or ladder tile.
+ * The snake and ladder fields will be used when a player moves to check what tile they are on.
+*/
 struct Tile {
-    position: u8,
     snake: bool,
     ladder: bool,
 }
 
-impl Board {
-
+/*
+ * Implementations for the Tile struct.
+ * The implementations will be used to check if the tile is a snake or ladder.
+ */
+impl Tile{
+    fn is_snake(&self) -> bool {
+        self.snake
+    }
+    fn is_ladder(&self) -> bool {
+        self.ladder
+    }
 }
+
 struct User {
     name: String,
     position: u8,
@@ -43,5 +52,23 @@ impl User {
 fn roll_dice()-> u8 {
     let mut rng = rand::rng();
     rng.random_range(1..=6)
+}
+
+fn make_tile(snake: bool, ladder: bool) -> Tile {
+    Tile {
+        snake: false,
+        ladder: false,
+    }
+}
+
+/*
+* Function to create a board based on the size and the number of snakes and ladders.
+* The return type will be a tuple of tiles.
+@param size: u16 size of the board, how many tiles will be needed to cross to win
+@param snakes: u8 amount of snake tiles on the board, must be an even number
+@param ladders: u8 amount of ladder tiles on the board, must be an even number
+*/
+fn make_board(size: u16, snakes: u8, ladders: u8) -> ()  {
+
 }
 
