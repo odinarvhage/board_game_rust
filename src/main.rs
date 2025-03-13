@@ -25,6 +25,15 @@ struct Board {
     ladders: u8,
 }
 
+impl Board {
+    fn reset(&mut self){
+        //Add method to create board in here
+    }
+    fn add_tile(&mut self, tile: Tile) {
+        self.board.insert(tile.read_position() as usize, tile);
+    }
+}
+
 /*
  * Struct to represent a tile on the board.
  * The tile can be a standard, snake or ladder tile.
@@ -33,6 +42,7 @@ struct Board {
 struct Tile {
     snake: bool,
     ladder: bool,
+    pos: u16
 }
 
 /*
@@ -45,6 +55,9 @@ impl Tile{
     }
     fn is_ladder(&self) -> bool {
         self.ladder
+    }
+    fn read_position(&self) -> u16 {
+        self.pos
     }
 }
 
@@ -82,16 +95,12 @@ fn roll_dice()-> u8 {
     rng.random_range(1..=6)
 }
 
-fn make_tile(snake: bool, ladder: bool) -> Tile {
+fn make_tile(snake: bool, ladder: bool, pos: u16) -> Tile {
     Tile {
         snake,
-        ladder
+        ladder,
+        pos
     }
-}
-
-fn add_tile_to_board(snake: bool, ladder: bool) {
-    let tile = make_tile(snake, ladder);
-    //Add tile to board
 }
 /*
 * Function to create a board based on the size and the number of snakes and ladders.
@@ -102,4 +111,8 @@ fn add_tile_to_board(snake: bool, ladder: bool) {
 */
 fn make_board(size: u16, snakes: u8, ladders: u8)  {
 //Add tiles to the board with random positions for the snakes and ladders
+    let mut rng= rand::rng();
+    rng.random_range(1..size);
 }
+
+
