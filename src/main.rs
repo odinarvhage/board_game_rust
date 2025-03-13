@@ -11,7 +11,9 @@ fn main() {
     while player_one.position < 100 {
         player_one.read_position();
         player_one.change_position(roll_dice());
-        if (player_one.position < 50 && player_one.can_level) {
+        player_one.read_level();
+        println!("\n");
+        if (player_one.position > 70 && player_one.can_level) {
             player_one.level_up()
         }
     }
@@ -65,7 +67,9 @@ impl User {
         self.level += 1;
         self.can_level = false;
     }
-
+    fn read_level(&self) {
+        println!("{} is level {}!", self.name, self.level);
+    }
 }
 fn roll_dice()-> u8 {
     let mut rng = rand::rng();
