@@ -32,6 +32,18 @@ impl Board {
     fn add_tile(&mut self, tile: Tile) {
         self.board.insert(tile.read_position() as usize, tile);
     }
+
+    fn make_snake_tile(&mut self, pos: u16)-> Tile {
+        make_tile(true,false,pos)
+    }
+    fn make_ladder_tile(&mut self, pos: u16)-> Tile {
+        make_tile(false, true, pos)
+    }
+    fn make_board(size: u16, snakes: u8, ladders: u8)  {
+        //Add tiles to the board with random positions for the snakes and ladders
+        let mut rng= rand::rng();
+        rng.random_range(1..size);
+    }
 }
 
 /*
@@ -109,10 +121,6 @@ fn make_tile(snake: bool, ladder: bool, pos: u16) -> Tile {
 @param snakes: u8 amount of snake tiles on the board, must be an even number
 @param ladders: u8 amount of ladder tiles on the board, must be an even number
 */
-fn make_board(size: u16, snakes: u8, ladders: u8)  {
-//Add tiles to the board with random positions for the snakes and ladders
-    let mut rng= rand::rng();
-    rng.random_range(1..size);
-}
+
 
 
