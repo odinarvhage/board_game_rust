@@ -61,6 +61,10 @@ fn make_tile(snake: bool, ladder: bool) -> Tile {
     }
 }
 
+fn add_tile_to_board(snake: bool, ladder: bool) {
+    let tile = make_tile(snake, ladder);
+    //Add tile to board
+}
 /*
 * Function to create a board based on the size and the number of snakes and ladders.
 * The return type will be a tuple of tiles.
@@ -68,7 +72,6 @@ fn make_tile(snake: bool, ladder: bool) -> Tile {
 @param snakes: u8 amount of snake tiles on the board, must be an even number
 @param ladders: u8 amount of ladder tiles on the board, must be an even number
 */
-fn make_board(size: u16, snakes: u8, ladders: u8) -> ()  {
-
+fn make_board(size: u16, snakes: u8, ladders: u8)  {
+//Add tiles to the board with random positions for the snakes and ladders
 }
-
