@@ -4,11 +4,16 @@ fn main() {
     let mut player_one: User = User {
         name: "Thrall".to_string(),
         position: 0,
-        class: "Shaman".to_string()
+        class: "Shaman".to_string(),
+        level: 1,
+        can_level: true,
     };
-    while(player_one.position < 100) {
-        println!("The position of {} is {}.\n",player_one.name,player_one.position);
-        player_one.change_position(roll_dice())
+    while player_one.position < 100 {
+        player_one.read_position();
+        player_one.change_position(roll_dice());
+        if (player_one.position < 50 && player_one.can_level) {
+            player_one.level_up()
+        }
     }
 }
 
@@ -39,13 +44,26 @@ struct User {
     name: String,
     position: u8,
     class: String,
+    level: u8,
+    can_level: bool,
 }
+
+/*
+* Implementations for the User struct.
+* The implementations will be used to read the position of the player,
+* change the position of the player and level up the player.
+*/
+
 impl User {
     fn read_position(&self) {
-        println!("Player is at position {}", self.position);
+        println!("{} is at position {}", self.name, self.position);
     }
     fn change_position(&mut self, input: u8) {
         self.position += input;
+    }
+    fn level_up(&mut self) {
+        self.level += 1;
+        self.can_level = false;
     }
 
 }
@@ -56,8 +74,8 @@ fn roll_dice()-> u8 {
 
 fn make_tile(snake: bool, ladder: bool) -> Tile {
     Tile {
-        snake: false,
-        ladder: false,
+        snake,
+        ladder
     }
 }
 
