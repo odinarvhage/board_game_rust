@@ -4,14 +4,6 @@ use crate::TileType::{Ladder, Snake, Standard};
 
 fn main() {
     let mut board = BoardBuilder::new();
-        board.add_tile(Standard);
-        board.add_tile(Standard);
-        board.add_tile(Standard);
-        board.add_tile(Standard);
-        board.add_tile(Standard);
-        board.add_tile(Standard);
-        board.add_tile(Standard);
-
     let mut player_one: User = User {
         name: "Thrall".to_string(),
         position: 0,
@@ -21,11 +13,10 @@ fn main() {
     };
     while player_one.position < 100 {
         player_one.read_position();
-        player_one.change_position(roll_dice());
+        player_one.change_position(roll_dice(),);
         println!("\n");
         if player_one.position > 70 && player_one.can_level {
             player_one.level_up();
-            player_one.read_level()
         }
     }
 }
@@ -49,8 +40,20 @@ impl BoardBuilder {
     pub fn add_tile(&mut self, tile: TileType) {
         self.tiles.push(make_tile(tile));
     }
+
+    fn change_player_position(&self, player: &mut User) {
+        player.change_position(0);
+    }
 }
 
+fn make_board(size: u16, snakes: u16, ladders: u16) -> BoardBuilder {
+    let mut board_to_be_made = BoardBuilder::new();
+    let mut i: u16 = 0;
+    for pos in i..size {
+        board_to_be_made.add_tile(Standard);
+    }
+    board_to_be_made
+}
 
 /*
  * Struct to represent a tile on the board.
@@ -127,9 +130,9 @@ fn make_tile(tile_type: TileType) -> Tile {
 
 struct User {
     name: String,
-    position: u8,
+    position: u16,
     class: String,
-    level: u8,
+    level: u16,
     can_level: bool,
 }
 
@@ -140,21 +143,21 @@ struct User {
 */
 
 impl User {
-    fn read_position(&self) {
-        println!("{} is at position {}", self.name, self.position);
+    fn read_position(&self) -> u16{
+        self.position
     }
-    fn change_position(&mut self, input: u8) {
-        self.position += input;
+    fn change_position(&mut self, input: u16){
+        self.position = input;
     }
     fn level_up(&mut self) {
         self.level += 1;
         self.can_level = false;
     }
-    fn read_level(&self) {
-        println!("{} has leveled up to level {}!", self.name, self.level);
+    fn read_level(&self) -> u16{
+        self.level
     }
 }
-fn roll_dice()-> u8 {
+fn roll_dice()-> u16 {
     let mut rng = rand::rng();
     rng.random_range(1..=6)
 }
