@@ -1,6 +1,10 @@
+use std::cmp::PartialEq;
 use rand::Rng;
+use crate::TileType::{Ladder, Snake};
 
 fn main() {
+    let board = BoardBuilder::new()
+        .add_tile(Snake);
     let mut player_one: User = User {
         name: "Thrall".to_string(),
         position: 0,
@@ -35,9 +39,8 @@ impl BoardBuilder {
             tiles: Vec::new()
         }
     }
-
-    pub fn add_tile(&mut self, tile: Tile) {
-        self.tiles.push(tile);
+    pub fn add_tile(&mut self, tile: TileType) {
+        self.tiles.push(make_tile(tile));
     }
 }
 
@@ -48,26 +51,44 @@ impl BoardBuilder {
  * The snake and ladder fields will be used when a player moves to check what tile they are on.
 */
 struct Tile {
-    snake: bool,
-    ladder: bool,
-    pos: u16
+    tile_type: TileType,
+}
+
+enum TileType {
+    Snake,
+    Ladder,
+    Standard
 }
 
 /*
  * Implementations for the Tile struct.
  * The implementations will be used to check if the tile is a snake or ladder.
  */
-impl Tile{
-    fn is_snake(&self) -> bool {
-        self.snake
-    }
-    fn is_ladder(&self) -> bool {
-        self.ladder
-    }
-    fn read_position(&self) -> u16 {
-        self.pos
+impl Tile {
+    fn read_type(self) -> TileType {
+        self.tile_type
     }
 }
+
+
+fn make_tile(tile_type: TileType) -> Tile {
+    if Snake {
+        Tile {
+            tile_type
+        }
+    }
+    else if Ladder {
+        Tile {
+            tile_type
+        }
+    }
+    else {
+        Tile {
+            tile_type
+        }
+    }
+}
+
 
 struct User {
     name: String,
@@ -104,11 +125,4 @@ fn roll_dice()-> u8 {
 }
 
 
-fn make_tile(snake: bool, ladder: bool, pos: u16) -> Tile {
-    Tile {
-        snake,
-        ladder,
-        pos
-    }
-}
 
