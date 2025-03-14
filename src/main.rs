@@ -19,32 +19,28 @@ fn main() {
     }
 }
 
-struct Board {
-    board: Vec<Tile>,
-    snakes: u8,
-    ladders: u8,
+struct BoardBuilder {
+    tiles: Vec<Tile>
 }
 
-impl Board {
-    fn reset(&mut self){
-        //Add method to create board in here
-    }
-    fn add_tile(&mut self, tile: Tile) {
-        self.board.insert(tile.read_position() as usize, tile);
+enum BoardComponent {
+    Snake,
+    Ladder,
+    Standard
+}
+
+impl BoardBuilder {
+    fn new() -> BoardBuilder {
+        BoardBuilder {
+            tiles: Vec::new()
+        }
     }
 
-    fn make_snake_tile(&mut self, pos: u16)-> Tile {
-        make_tile(true,false,pos)
-    }
-    fn make_ladder_tile(&mut self, pos: u16)-> Tile {
-        make_tile(false, true, pos)
-    }
-    fn make_board(size: u16, snakes: u8, ladders: u8)  {
-        //Add tiles to the board with random positions for the snakes and ladders
-        let mut rng= rand::rng();
-        rng.random_range(1..size);
+    pub fn add_tile(&mut self, tile: Tile) {
+        self.tiles.push(tile);
     }
 }
+
 
 /*
  * Struct to represent a tile on the board.
@@ -107,6 +103,7 @@ fn roll_dice()-> u8 {
     rng.random_range(1..=6)
 }
 
+
 fn make_tile(snake: bool, ladder: bool, pos: u16) -> Tile {
     Tile {
         snake,
@@ -114,13 +111,4 @@ fn make_tile(snake: bool, ladder: bool, pos: u16) -> Tile {
         pos
     }
 }
-/*
-* Function to create a board based on the size and the number of snakes and ladders.
-* The return type will be a tuple of tiles.
-@param size: u16 size of the board, how many tiles will be needed to cross to win
-@param snakes: u8 amount of snake tiles on the board, must be an even number
-@param ladders: u8 amount of ladder tiles on the board, must be an even number
-*/
-
-
 
