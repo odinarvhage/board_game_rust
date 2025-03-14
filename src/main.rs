@@ -1,10 +1,17 @@
 use std::cmp::PartialEq;
 use rand::Rng;
-use crate::TileType::{Ladder, Snake};
+use crate::TileType::{Ladder, Snake, Standard};
 
 fn main() {
-    let board = BoardBuilder::new()
-        .add_tile(Snake);
+    let mut board = BoardBuilder::new();
+        board.add_tile(Standard);
+        board.add_tile(Standard);
+        board.add_tile(Standard);
+        board.add_tile(Standard);
+        board.add_tile(Standard);
+        board.add_tile(Standard);
+        board.add_tile(Standard);
+
     let mut player_one: User = User {
         name: "Thrall".to_string(),
         position: 0,
@@ -70,14 +77,42 @@ impl Tile {
     }
 }
 
+/*
+ * Implementations for the TileType enum.
+ * The implementations will be used to check if the tile is a snake or ladder.
+ */
+impl PartialEq for TileType {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Snake => {
+                match other {
+                    Snake => true,
+                    _ => false
+                }
+            }
+            Ladder => {
+                match other {
+                    Ladder => true,
+                    _ => false
+                }
+            }
+            Standard => {
+                match other {
+                    Standard => true,
+                    _ => false
+                }
+            }
+        }
+    }
+}
 
 fn make_tile(tile_type: TileType) -> Tile {
-    if Snake {
+    if tile_type == Snake {
         Tile {
             tile_type
         }
     }
-    else if Ladder {
+    else if tile_type == Ladder {
         Tile {
             tile_type
         }
