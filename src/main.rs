@@ -6,13 +6,17 @@ fn main() {
     println!("Welcome to Rust!");
     let board = Board::make_board(100, 10, 10);
     println!("WOW!");
-    let mut player_one: User = User {
+    let player_one: User = User {
         name: "Thrall".to_string(),
         position: 0,
         class: "Shaman".to_string(),
         level: 1,
         can_level: true,
     };
+    start_game(player_one);
+
+}
+fn start_game(mut player_one: User) {
     while player_one.read_position() < 100 {
         player_one.read_position();
         player_one.change_position(roll_dice());
@@ -22,14 +26,9 @@ fn main() {
         }
     }
 }
-
 struct Board {
     tiles: Vec<Tile>
 }
-struct BoardComponent {
-    tiles: Tile
-}
-
 impl Board {
     fn new() -> Board {
         Board {
@@ -40,23 +39,58 @@ impl Board {
         self.tiles.push(make_tile(tile));
     }
 
+    fn add_tile_with_position(&mut self, tile: TileType, position: u16) {
+        self.tiles.insert(position as usize, make_tile(tile));
+    }
+
     fn change_player_position(&self, player: &mut User, movement: u16) {
         player.change_position(movement);
     }
+
     fn make_board(size: u16, snakes: u16, ladders: u16) -> Board {
-        println!("Making board");
         let mut board_to_be_made = Board::new();
-        println!("Making i");
         let mut i: u16 = 0;
         while i < size {
             println!("{} ", i);
             i += 1;
             board_to_be_made.add_tile(Standard);
         }
+        board_to_be_made.make_snakes_and_ladders(snakes, ladders, size);
         board_to_be_made
     }
-}
 
+    fn make_snakes_and_ladders(&mut self, snakes: u16, ladders: u16, size: u16) {
+        let mut list_of_positions: Vec<u16> = Vec::new();
+        let mut rng = rand::rng();
+        let mut i: u16 = 0;
+        while i < snakes {
+            let position = rng.random_range(1..=size);
+            for(pos, _) in list_of_positions.iter().enumerate() {
+                if pos == position as usize {
+                    self.tiles.remove(position as usize);
+                    self.add_tile_with_position(Snake, position);
+                    list_of_positions.push(position);
+                    i += 1;
+                }
+            }
+        }
+        i = 0;
+        while i < ladders {
+            let position = rng.random_range(1..=100);
+            for(pos, _) in list_of_positions.iter().enumerate() {
+                if pos == position as usize {
+                    self.tiles.remove(position as usize);
+                    self.add_tile_with_position(Snake, position);
+                    list_of_positions.push(position);
+                    i += 1;
+                }
+            }
+        }
+    }
+    fn read_tile_from_position(&self, position: u16) -> &Tile {
+        self.tiles.get(position as usize).unwrap()
+    }
+}
 
 /*
  * Struct to represent a tile on the board.
@@ -162,6 +196,7 @@ impl User {
     fn read_name(&self) -> String {
         self.name.clone()
     }
+
 }
 fn roll_dice()-> u16 {
     let mut rng = rand::rng();
