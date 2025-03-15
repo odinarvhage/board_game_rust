@@ -35,6 +35,10 @@ impl Board {
             tiles: Vec::new()
         }
     }
+
+    fn get_board(self) -> Vec<Tile>{
+        self.tiles
+    }
     pub fn add_tile(&mut self, tile: TileType) {
         self.tiles.push(make_tile(tile));
     }
@@ -55,36 +59,24 @@ impl Board {
             i += 1;
             board_to_be_made.add_tile(Standard);
         }
-        board_to_be_made.make_snakes_and_ladders(snakes, ladders, size);
+        board_to_be_made.make_snakes(snakes);
         board_to_be_made
     }
 
-    fn make_snakes_and_ladders(&mut self, snakes: u16, ladders: u16, size: u16) {
-        let mut list_of_positions: Vec<u16> = Vec::new();
-        let mut rng = rand::rng();
+    fn make_snakes(&mut self, snakes: u16) {
         let mut i: u16 = 0;
-        while i < snakes {
-            let position = rng.random_range(1..=size);
-            for(pos, _) in list_of_positions.iter().enumerate() {
-                if pos == position as usize {
-                    self.tiles.remove(position as usize);
-                    self.add_tile_with_position(Snake, position);
-                    list_of_positions.push(position);
-                    i += 1;
-                }
-            }
-        }
-        i = 0;
-        while i < ladders {
+        let mut rng = rand::rng();
+        for _ in 0..snakes {
             let position = rng.random_range(1..=100);
-            for(pos, _) in list_of_positions.iter().enumerate() {
-                if pos == position as usize {
-                    self.tiles.remove(position as usize);
-                    self.add_tile_with_position(Snake, position);
-                    list_of_positions.push(position);
-                    i += 1;
-                }
-            }
+            self.add_tile_with_position(Snake, position);
+        }
+    }
+    fn make_ladders(&mut self, ladders: u16) {
+        let mut i: u16 = 0;
+        let mut rng = rand::rng();
+        for _ in 0..ladders {
+            let position = rng.random_range(1..=100);
+            self.add_tile_with_position(Ladder, position);
         }
     }
     fn read_tile_from_position(&self, position: u16) -> &Tile {
