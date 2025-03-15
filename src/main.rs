@@ -3,7 +3,9 @@ use rand::Rng;
 use crate::TileType::{Ladder, Snake, Standard};
 
 fn main() {
-    let mut board = BoardBuilder::new();
+    println!("Welcome to Rust!");
+    let board = Board::make_board(100, 10, 10);
+    println!("WOW!");
     let mut player_one: User = User {
         name: "Thrall".to_string(),
         position: 0,
@@ -11,29 +13,26 @@ fn main() {
         level: 1,
         can_level: true,
     };
-    while player_one.position < 100 {
+    while player_one.read_position() < 100 {
         player_one.read_position();
-        player_one.change_position(roll_dice(),);
-        println!("\n");
+        player_one.change_position(roll_dice());
+        println!("{} is at position {}", player_one.read_name(), player_one.read_position());
         if player_one.position > 70 && player_one.can_level {
             player_one.level_up();
         }
     }
 }
 
-struct BoardBuilder {
+struct Board {
     tiles: Vec<Tile>
 }
-
-enum BoardComponent {
-    Snake,
-    Ladder,
-    Standard
+struct BoardComponent {
+    tiles: Tile
 }
 
-impl BoardBuilder {
-    fn new() -> BoardBuilder {
-        BoardBuilder {
+impl Board {
+    fn new() -> Board {
+        Board {
             tiles: Vec::new()
         }
     }
@@ -41,19 +40,23 @@ impl BoardBuilder {
         self.tiles.push(make_tile(tile));
     }
 
-    fn change_player_position(&self, player: &mut User) {
-        player.change_position(0);
+    fn change_player_position(&self, player: &mut User, movement: u16) {
+        player.change_position(movement);
+    }
+    fn make_board(size: u16, snakes: u16, ladders: u16) -> Board {
+        println!("Making board");
+        let mut board_to_be_made = Board::new();
+        println!("Making i");
+        let mut i: u16 = 0;
+        while i < size {
+            println!("{} ", i);
+            i += 1;
+            board_to_be_made.add_tile(Standard);
+        }
+        board_to_be_made
     }
 }
 
-fn make_board(size: u16, snakes: u16, ladders: u16) -> BoardBuilder {
-    let mut board_to_be_made = BoardBuilder::new();
-    let mut i: u16 = 0;
-    for pos in i..size {
-        board_to_be_made.add_tile(Standard);
-    }
-    board_to_be_made
-}
 
 /*
  * Struct to represent a tile on the board.
@@ -77,6 +80,12 @@ enum TileType {
 impl Tile {
     fn read_type(self) -> TileType {
         self.tile_type
+    }
+
+    fn new(tile_type: TileType) -> Tile {
+        Tile {
+            tile_type
+        }
     }
 }
 
@@ -111,19 +120,12 @@ impl PartialEq for TileType {
 
 fn make_tile(tile_type: TileType) -> Tile {
     if tile_type == Snake {
-        Tile {
-            tile_type
-        }
-    }
-    else if tile_type == Ladder {
-        Tile {
-            tile_type
-        }
+        Tile::new(Snake)
+    } else if tile_type == Ladder {
+        Tile::new(Ladder)
     }
     else {
-        Tile {
-            tile_type
-        }
+        Tile::new(Standard)
     }
 }
 
@@ -147,7 +149,7 @@ impl User {
         self.position
     }
     fn change_position(&mut self, input: u16){
-        self.position = input;
+        self.position += input;
     }
     fn level_up(&mut self) {
         self.level += 1;
@@ -155,6 +157,10 @@ impl User {
     }
     fn read_level(&self) -> u16{
         self.level
+    }
+
+    fn read_name(&self) -> String {
+        self.name.clone()
     }
 }
 fn roll_dice()-> u16 {
