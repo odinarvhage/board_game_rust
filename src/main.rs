@@ -4,8 +4,7 @@ use crate::TileType::{Ladder, Snake, Standard};
 
 fn main() {
     println!("Welcome to Rust!");
-    let board = Board::make_board(100, 10, 10);
-    println!("WOW!");
+    let board = Board::make_board(100);
     let player_one: User = User {
         name: "Thrall".to_string(),
         position: 0,
@@ -13,19 +12,10 @@ fn main() {
         level: 1,
         can_level: true,
     };
-    start_game(player_one);
+
 
 }
-fn start_game(mut player_one: User) {
-    while player_one.read_position() < 100 {
-        player_one.read_position();
-        player_one.change_position(roll_dice());
-        println!("{} is at position {}", player_one.read_name(), player_one.read_position());
-        if player_one.position > 70 && player_one.can_level {
-            player_one.level_up();
-        }
-    }
-}
+
 struct Board {
     tiles: Vec<Tile>
 }
@@ -51,7 +41,7 @@ impl Board {
         player.change_position(movement);
     }
 
-    fn make_board(size: u16, snakes: u16, ladders: u16) -> Board {
+    fn make_board(size: u16) -> Board {
         let mut board_to_be_made = Board::new();
         let mut i: u16 = 0;
         while i < size {
@@ -59,12 +49,10 @@ impl Board {
             i += 1;
             board_to_be_made.add_tile(Standard);
         }
-        board_to_be_made.make_snakes(snakes);
         board_to_be_made
     }
 
     fn make_snakes(&mut self, snakes: u16) {
-        let mut i: u16 = 0;
         let mut rng = rand::rng();
         for _ in 0..snakes {
             let position = rng.random_range(1..=100);
@@ -72,7 +60,6 @@ impl Board {
         }
     }
     fn make_ladders(&mut self, ladders: u16) {
-        let mut i: u16 = 0;
         let mut rng = rand::rng();
         for _ in 0..ladders {
             let position = rng.random_range(1..=100);
@@ -189,6 +176,14 @@ impl User {
         self.name.clone()
     }
 
+    fn perform_turn(mut self) {
+        self.read_position();
+        self.change_position(roll_dice());
+        println!("{} is at position {}", self.read_name(), self.read_position());
+        if self.position > 70 && self.can_level {
+            self.level_up();
+        }
+    }
 }
 fn roll_dice()-> u16 {
     let mut rng = rand::rng();
