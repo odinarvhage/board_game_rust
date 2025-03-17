@@ -1,8 +1,6 @@
-use std::cmp::PartialEq;
 use std::collections::HashMap;
 use fastrand;
 
-//TODO: Change TileType enum to be represented by numbers instead
 //TODO: Add tests
 //TODO: Add text input for making players
 //TODO: Add text input for board size, snakes, and ladders
@@ -34,12 +32,12 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
             println!("{} has rolled {}", player.get_username(), dice_roll);
             perform_turn(player, dice_roll);
             match board.get_tile(player.get_position()) {
-                Some(TileType::SNAKE) => {
+                Some(2) => {
                     println!("{} has landed on a snake!", player.get_username());
                     let new_position = player.get_position() - 5;
                     player.set_position(new_position);
                 }
-                Some(TileType::LADDER) => {
+                Some(1) => {
                     println!("{} has landed on a ladder!", player.get_username());
                     let new_position = player.get_position() + 5;
                     println!("{} is moving up {} spaces!", player.get_username(), 5);
@@ -63,8 +61,8 @@ fn perform_turn(player: &mut Player, roll: u32) {
 }
 fn make_board(size: u32, snakes: u32, ladders: u32) -> Board {
     let mut board = Board::new(size);
-    board.add_event_tiles(snakes, TileType::SNAKE);
-    board.add_event_tiles(ladders, TileType::LADDER);
+    board.add_event_tiles(snakes, 2);
+    board.add_event_tiles(ladders, 1);
     board
 }
 
@@ -103,79 +101,34 @@ impl Player {
     }
 }
 
-
-#[derive(Clone)]
-enum TileType {
-    SNAKE,
-    LADDER,
-    STANDARD,
-}
-
-impl TileType {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (TileType::SNAKE, TileType::SNAKE) => true,
-            (TileType::LADDER, TileType::LADDER) => true,
-            (TileType::STANDARD, TileType::STANDARD) => true,
-            _ => false
-        }
-    }
-
-    fn clone(&self) -> TileType {
-        match self {
-            TileType::SNAKE => TileType::SNAKE,
-            TileType::LADDER => TileType::LADDER,
-            TileType::STANDARD => TileType::STANDARD,
-        }
-    }
-}
-
+/**
+    * The board struct is a map of u32 to u32. The key represents the position on the board and the value represents the type of tile.
+    * The board is initialized with a size and all tiles are set to STANDARD.
+    * A value of 0 means standard, 1 means ladder, and 2 means snake.
+    */
 struct Board {
-    board: HashMap<u32, TileType>
+    board: HashMap<u32, u32>
 }
 
-
-
-impl PartialEq<TileType> for TileType {
-    fn eq(&self, other: &TileType) -> bool {
-        match (self, other) {
-            (TileType::SNAKE, TileType::SNAKE) => true,
-            (TileType::LADDER, TileType::LADDER) => true,
-            (TileType::STANDARD, TileType::STANDARD) => true,
-            _ => false
-        }
-    }
-}
-
-impl PartialEq<TileType> for &TileType {
-    fn eq(&self, other: &TileType) -> bool {
-        match (self, other) {
-            (TileType::SNAKE, TileType::SNAKE) => true,
-            (TileType::LADDER, TileType::LADDER) => true,
-            (TileType::STANDARD, TileType::STANDARD) => true,
-            _ => false
-        }
-    }
-}
 
 impl Board {
     fn new(size: u32) -> Board {
         let mut board = HashMap::new();
         for i in 1..size {
-            board.insert(i, TileType::STANDARD);
+            board.insert(i, 0);
         }
         Board { board }
     }
 
-    fn get_tile(&self, position: u32) -> Option<TileType> {
+    fn get_tile(&self, position: u32) -> Option<u32> {
         self.board.get(&position).cloned()
     }
 
-    fn add_event_tiles(&mut self, amount_to_add: u32, tile_type: TileType) {
+    fn add_event_tiles(&mut self, amount_to_add: u32, tile_type: u32) {
         if self.board.is_empty() {
             println!("Board is empty. Please add tiles first.");
         } else {
-            let positions: Vec<u32> = (0..)
+            let positions: Vec<u32> = (0..self.board.len() as u32)
                 .filter_map(|_| {
                     let random_number = fastrand::u32(0..self.board.len() as u32);
                     if random_number == 1 || random_number == self.board.len() as u32 {
@@ -184,12 +137,11 @@ impl Board {
                         Some(random_number)
                     }
                 })
-                .filter(|pos| self.board.get(pos) == Some(&TileType::STANDARD))
                 .take(amount_to_add as usize)
                 .collect();
 
             for pos in positions {
-                self.board.insert(pos, tile_type.clone());
+                self.board.insert(pos, tile_type);
             }
         }
     }
