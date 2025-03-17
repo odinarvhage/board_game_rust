@@ -25,8 +25,22 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
         for player in player_list.iter_mut() {
             println!("{} is at position {}", player.get_username(), player.get_position());
             let dice_roll = fastrand::u32(1..7);
-            println!("{} dice roll: {}", player.get_username(), dice_roll);
+            println!("{} has rolled {}", player.get_username(), dice_roll);
             perform_turn(player, dice_roll);
+            match board.get_tile(player.get_position()) {
+                Some(TileType::SNAKE) => {
+                    println!("{} has landed on a snake!", player.get_username());
+                    let new_position = player.get_position() - 5;
+                    player.set_position(new_position);
+                }
+                Some(TileType::LADDER) => {
+                    println!("{} has landed on a ladder!", player.get_username());
+                    let new_position = player.get_position() + 5;
+                    println!("{} is moving up {} spaces!", player.get_username(), 5);
+                    player.set_position(new_position);
+                }
+                _ => {}
+            }
             if player.get_position() >= size {
                 println!("{} has won the game!", player.get_username());
                 winner = true;
@@ -84,10 +98,11 @@ impl Player {
 }
 
 
+#[derive(Clone)]
 enum TileType {
     SNAKE,
     LADDER,
-    STANDARD
+    STANDARD,
 }
 
 impl TileType {
@@ -109,28 +124,22 @@ impl TileType {
     }
 }
 
-use std::ops::{Bound, RangeBounds};
-
-fn extract_bounds<R: RangeBounds<u32>>(range: R) -> Option<(u32, u32)> {
-    let start = match range.start_bound() {
-        Bound::Included(&n) => n,     // Start is inclusive
-        Bound::Excluded(&n) => n + 1, // Start is exclusive, so increment
-        Bound::Unbounded => return None, // No start bound
-    };
-
-    let end = match range.end_bound() {
-        Bound::Included(&n) => n,     // End is inclusive
-        Bound::Excluded(&n) => n - 1, // End is exclusive, so decrement
-        Bound::Unbounded => return None, // No end bound
-    };
-
-    Some((start, end))
-}
 struct Board {
     board: HashMap<u32, TileType>
 }
 
 
+
+impl PartialEq<TileType> for TileType {
+    fn eq(&self, other: &TileType) -> bool {
+        match (self, other) {
+            (TileType::SNAKE, TileType::SNAKE) => true,
+            (TileType::LADDER, TileType::LADDER) => true,
+            (TileType::STANDARD, TileType::STANDARD) => true,
+            _ => false
+        }
+    }
+}
 
 impl PartialEq<TileType> for &TileType {
     fn eq(&self, other: &TileType) -> bool {
@@ -152,6 +161,10 @@ impl Board {
         Board { board }
     }
 
+    fn get_tile(&self, position: u32) -> Option<TileType> {
+        self.board.get(&position).cloned()
+    }
+
     fn add_event_tiles(&mut self, amount_to_add: u32, tile_type: TileType) {
         if self.board.is_empty() {
             println!("Board is empty. Please add tiles first.");
@@ -165,7 +178,7 @@ impl Board {
                         Some(random_number)
                     }
                 })
-                .filter(|&pos| self.board.get(&pos).unwrap() == TileType::STANDARD)
+                .filter(|pos| self.board.get(pos) == Some(&TileType::STANDARD))
                 .take(amount_to_add as usize)
                 .collect();
 
