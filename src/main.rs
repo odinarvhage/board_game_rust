@@ -1,13 +1,29 @@
 use std::cmp::PartialEq;
 use std::collections::HashMap;
-use rand::Rng;
+use fastrand;
 fn main() {
+    let mut player_list: Vec<Player> = Vec::new();
+    let mut board = Board::new(100);
+}
+
+fn make_player(username: String, piece: String, player_list: Vec<Player>) {
+    add_player_to_list(Player::new(username, piece),player_list);
 
 }
 
-fn start(player_list: Vec<Player>) {
-    //create a new board, then take turns until a player reaches the final tile
+fn add_player_to_list(player_to_add: Player, mut player_list: Vec<Player>) {
+    player_list.push(player_to_add);
 }
+
+fn start (player_list: Vec<Player>, size: u32, snakes: u32, ladders: u32) {
+    let board = make_board(size, snakes, ladders);
+}
+
+fn make_board(size: u32, snakes: u32, ladders: u32) -> Board {
+    let mut board = Board::new(size);
+    board
+}
+
 struct Player {
     username: String,
     piece: String,
@@ -15,6 +31,14 @@ struct Player {
 }
 
 impl Player {
+
+    fn new(username: String, piece: String) -> Player {
+        Player {
+            username,
+            piece,
+            position: 0,
+        }
+    }
     fn get_position(&self) -> u32 {
         self.position
     }
@@ -35,9 +59,6 @@ impl Player {
     }
 }
 
-struct Tile {
-    tile_type: TileType,
-}
 
 enum TileType {
     SNAKE,
@@ -45,24 +66,50 @@ enum TileType {
     STANDARD
 }
 
-impl Tile {
-    fn new(tile_type: TileType) -> Tile {
-        Tile { tile_type }
-    }
-    fn get_tile_type(self) -> TileType {
-        self.tile_type
-    }
-    fn set_tile_type(&mut self, tile_type: TileType) {
-        self.tile_type = tile_type;
-    }
-}
-
-struct Board {
-    board: HashMap<u32, Tile>
-}
-
-impl PartialEq for TileType {
+impl TileType {
     fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (TileType::SNAKE, TileType::SNAKE) => true,
+            (TileType::LADDER, TileType::LADDER) => true,
+            (TileType::STANDARD, TileType::STANDARD) => true,
+            _ => false
+        }
+    }
+
+    fn clone(&self) -> TileType {
+        match self {
+            TileType::SNAKE => TileType::SNAKE,
+            TileType::LADDER => TileType::LADDER,
+            TileType::STANDARD => TileType::STANDARD,
+        }
+    }
+}
+
+use std::ops::{Bound, RangeBounds};
+
+fn extract_bounds<R: RangeBounds<u32>>(range: R) -> Option<(u32, u32)> {
+    let start = match range.start_bound() {
+        Bound::Included(&n) => n,     // Start is inclusive
+        Bound::Excluded(&n) => n + 1, // Start is exclusive, so increment
+        Bound::Unbounded => return None, // No start bound
+    };
+
+    let end = match range.end_bound() {
+        Bound::Included(&n) => n,     // End is inclusive
+        Bound::Excluded(&n) => n - 1, // End is exclusive, so decrement
+        Bound::Unbounded => return None, // No end bound
+    };
+
+    Some((start, end))
+}
+struct Board {
+    board: HashMap<u32, TileType>
+}
+
+
+
+impl PartialEq<TileType> for &TileType {
+    fn eq(&self, other: &TileType) -> bool {
         match (self, other) {
             (TileType::SNAKE, TileType::SNAKE) => true,
             (TileType::LADDER, TileType::LADDER) => true,
@@ -76,46 +123,30 @@ impl Board {
     fn new(size: u32) -> Board {
         let mut board = HashMap::new();
         for i in 1..size {
-            board.insert(i, Tile { tile_type: TileType::STANDARD });
+            board.insert(i, TileType::STANDARD);
         }
         Board { board }
     }
 
-    fn add_snakes(&mut self, amount_to_add: u32,) {
-        let mut rng = rand::rng();
+    fn add_event_tiles(&mut self, amount_to_add: u32, tile_type: TileType) {
         if self.board.is_empty() {
             println!("Board is empty. Please add tiles first.");
-        }
-        else {
-            for _ in 0..amount_to_add {
-                rng.random_range(self.board.len()).unwrap();
-                if self.board.get(&rng).unwrap().tile_type == TileType::SNAKE ||
-                   self.board.get(&rng).unwrap().tile_type == TileType::LADDER {
-                    _ -= 1;
-                }
-                else {
-                    self.board.get_mut(&rng).unwrap().set_tile_type(TileType::SNAKE);
-                }
-            }
-        }
-    }
+        } else {
+            let positions: Vec<u32> = (0..)
+                .filter_map(|_| {
+                    let random_number = fastrand::u32(0..self.board.len() as u32);
+                    if random_number == 1 || random_number == self.board.len() as u32 {
+                        None
+                    } else {
+                        Some(random_number)
+                    }
+                })
+                .filter(|&pos| self.board.get(&pos).unwrap() == TileType::STANDARD)
+                .take(amount_to_add as usize)
+                .collect();
 
-    //I know this is a lot of repeated code, but I'm not sure how to make a function to add both snakes and ladders.
-    fn add_ladders(&mut self, amount_to_add: u32,) {
-        let mut rng = rand::rng();
-        if self.board.is_empty() {
-            println!("Board is empty. Please add tiles first.");
-        }
-        else {
-            for _ in 0..amount_to_add {
-                rng.random_range(self.board.len()).unwrap();
-                if self.board.get(&rng).unwrap().tile_type == TileType::LADDER
-                || self.board.get(&rng).unwrap().tile_type == TileType::SNAKE {
-                    _ -= 1;
-                }
-                else {
-                    self.board.get_mut(&rng).unwrap().set_tile_type(TileType::LADDER);
-                }
+            for pos in positions {
+                self.board.insert(pos, tile_type.clone());
             }
         }
     }
