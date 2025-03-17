@@ -1,6 +1,12 @@
 use std::cmp::PartialEq;
 use std::collections::HashMap;
 use fastrand;
+
+//TODO: Change TileType enum to be represented by numbers instead
+//TODO: Add tests
+//TODO: Add text input for making players
+//TODO: Add text input for board size, snakes, and ladders
+//TODO: Start making the GUI with egui crate
 fn main() {
     let mut player_list: Vec<Player> = Vec::new();
     player_list.push(Player::new("Nick".to_string(),"Hat".to_string()));
