@@ -21,9 +21,9 @@ fn main() {
 
 /**
     * The start function is the main function that runs the game. It takes a mutable reference to a vector of players, the size of the board, the number of snakes, and the number of ladders.
-    * The function will loop through the player list and perform a turn for each player. The player will roll a die and move that many spaces.
-    * If the player lands on a snake, they will move back 5 spaces. If they land on a ladder, they will move up 5 spaces.
-    * The game will continue until a player reaches the end of the board.
+    * The function loops through the player list and performs a turn for each player. The player rolls a die and moves that many spaces.
+    * If the player lands on a snake, they move back 5 spaces. If they land on a ladder, they move up 5 spaces.
+    * The game continues until a player reaches the end of the board.
     */
 
 fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
@@ -62,7 +62,7 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
 
 /**
  * The perform_turn function takes a mutable reference to a player and a u32 representing the roll of the die.
- * The function will add the roll to the player's current position.
+ * The function adds the roll to the player's current position.
  */
 fn perform_turn(player: &mut Player, roll: u32) {
     let position_change = player.get_position() + roll;
@@ -71,8 +71,8 @@ fn perform_turn(player: &mut Player, roll: u32) {
 
 /**
     * The make_board function takes a u32 representing the size of the board, a u32 representing the number of snakes, and a u32 representing the number of ladders.
-    * The function will create a new board with the given size and add the specified number of snakes and ladders to the board.
-    * The snakes and ladders will be randomly placed on the board.
+    * The function creates a new board with the given size and adds the specified number of snakes and ladders to the board.
+    * The snakes and ladders are randomly placed on the board.
     */
 fn make_board(size: u32, snakes: u32, ladders: u32) -> Board {
     let mut board = Board::new(size);
@@ -92,7 +92,9 @@ struct Player {
 }
 
 /**
-    * The Board struct represents the game board. It is a map of u32 to u32, where the key represents the position on the board and the value represents the type of tile.
+    * The Board struct represents the game board.
+    * It's a map of u32 to u32, where the key represents the position on the board,
+    * and the value represents the type of tile.
     * The board is initialized with a size and all tiles are set to STANDARD.
     * A value of 0 means standard, 1 means ladder, and 2 means snake.
     */
@@ -138,7 +140,7 @@ struct Board {
  * The Board struct has a new function that takes a u32 representing the size of the board and returns a new Board with the given size.
  * The get_tile function takes a u32 representing the position on the board and returns the type of tile at that position.
  * The add_event_tiles function takes a u32 representing the number of tiles to add and a u32 representing the type of tile to add.
- * The function will randomly place the specified number of tiles on the board.
+ * The function randomly places the specified number of tiles on the board.
  */
 impl Board {
     /**
@@ -160,7 +162,7 @@ impl Board {
 
     /**
         * The add_event_tiles function takes a u32 representing the number of tiles to add and a u32 representing the type of tile to add.
-        * The function will randomly place the specified number of tiles on the board.
+        * The function randomly places the specified number of tiles on the board.
         */
     fn add_event_tiles(&mut self, amount_to_add: u32, tile_type: u32) {
         if self.board.is_empty() {
