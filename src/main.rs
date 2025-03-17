@@ -1,3 +1,4 @@
+use std::cmp::PartialEq;
 use std::collections::HashMap;
 use rand::Rng;
 fn main() {
@@ -60,6 +61,17 @@ struct Board {
     board: HashMap<u32, Tile>
 }
 
+impl PartialEq for TileType {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (TileType::SNAKE, TileType::SNAKE) => true,
+            (TileType::LADDER, TileType::LADDER) => true,
+            (TileType::STANDARD, TileType::STANDARD) => true,
+            _ => false
+        }
+    }
+}
+
 impl Board {
     fn new(size: u32) -> Board {
         let mut board = HashMap::new();
@@ -69,11 +81,42 @@ impl Board {
         Board { board }
     }
 
-    fn add_snakes(&mut self, snakes: u32) {
+    fn add_snakes(&mut self, amount_to_add: u32,) {
         let mut rng = rand::rng();
-        for _ in 0..snakes {
-            rng.random_range(self.board.len());
+        if self.board.is_empty() {
+            println!("Board is empty. Please add tiles first.");
+        }
+        else {
+            for _ in 0..amount_to_add {
+                rng.random_range(self.board.len()).unwrap();
+                if self.board.get(&rng).unwrap().tile_type == TileType::SNAKE ||
+                   self.board.get(&rng).unwrap().tile_type == TileType::LADDER {
+                    _ -= 1;
+                }
+                else {
+                    self.board.get_mut(&rng).unwrap().set_tile_type(TileType::SNAKE);
+                }
+            }
+        }
+    }
 
+    //I know this is a lot of repeated code, but I'm not sure how to make a function to add both snakes and ladders.
+    fn add_ladders(&mut self, amount_to_add: u32,) {
+        let mut rng = rand::rng();
+        if self.board.is_empty() {
+            println!("Board is empty. Please add tiles first.");
+        }
+        else {
+            for _ in 0..amount_to_add {
+                rng.random_range(self.board.len()).unwrap();
+                if self.board.get(&rng).unwrap().tile_type == TileType::LADDER
+                || self.board.get(&rng).unwrap().tile_type == TileType::SNAKE {
+                    _ -= 1;
+                }
+                else {
+                    self.board.get_mut(&rng).unwrap().set_tile_type(TileType::LADDER);
+                }
+            }
         }
     }
 }
