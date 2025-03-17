@@ -125,7 +125,8 @@ impl Player {
 }
 
 /**
- * The board struct is a map of u32 to u32. The key represents the position on the board and the value represents the type of tile.
+ * The board struct is a map of u32 to u32.
+ * The key represents the position on the board,and the value represents the type of tile.
  * The board is initialized with a size and all tiles are set to STANDARD.
  * A value of 0 means standard, 1 means ladder, and 2 means snake.
  */
