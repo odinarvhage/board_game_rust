@@ -35,30 +35,30 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
     let board = make_board(size, snakes, ladders);
     while !winner {
         for player in player_list.iter_mut() {
-            println!("{} is at position {}", player.get_username(), player.get_position());
+            println!("{} is at position {}", player.username, player.position);
             let dice_roll = fastrand::u32(1..7);
-            println!("{} has rolled {}", player.get_username(), dice_roll);
+            println!("{} has rolled {}", player.username, dice_roll);
             perform_turn(player, dice_roll);
-            match board.get_tile(player.get_position()) {
+            match board.get_tile(player.position) {
                 Some(2) => {
-                    println!("{} has landed on a snake!", player.get_username());
-                    let new_position = player.get_position() - 5;
+                    println!("{} has landed on a snake!", player.username);
+                    let new_position = player.position - 5;
                     player.set_position(new_position);
                 }
                 Some(1) => {
-                    println!("{} has landed on a ladder!", player.get_username());
-                    let new_position = player.get_position() + 5;
-                    println!("{} is moving up {} spaces!", player.get_username(), 5);
+                    println!("{} has landed on a ladder!", player.username);
+                    let new_position = player.position + 5;
+                    println!("{} is moving up {} spaces!", player.username, 5);
                     player.set_position(new_position);
                 }
                 _ => {}
             }
-            if player.get_position() >= size {
-                println!("{} has won the game!", player.get_username());
+            if player.position >= size {
+                println!("{} has won the game!", player.username);
                 winner = true;
                 break;
             }
-            println!("{} is now at position {}", player.get_username(), player.get_position());
+            println!("{} is now at position {}", player.username, player.position);
             println!("\n");
             sleep(std::time::Duration::from_secs(1));
         }
@@ -70,7 +70,7 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
  * The function adds the roll to the player's current position.
  */
 fn perform_turn(player: &mut Player, roll: u32) {
-    let position_change = player.get_position() + roll;
+    let position_change = player.position + roll;
     player.set_position(position_change);
 }
 
@@ -111,23 +111,17 @@ impl Player {
             position: 0,
         }
     }
-    /**
-        * The get_position function returns the player's current position on the board.
-        */
-    fn get_position(&self) -> u32 {
-        self.position
-    }
-    /**
-        * The get_username function returns the player's username.
-        */
-    fn get_username(&self) -> String {
-        self.username.clone()
-    }
-    /**
-        * The set_position function takes a u32 representing the new position and sets the player's position to that value.
-        */
+
     fn set_position(&mut self, position: u32) {
         self.position = position;
+    }
+
+    fn set_username(&mut self, username: String) {
+        self.username = username;
+    }
+
+    fn set_piece(&mut self, piece: String) {
+        self.piece = piece;
     }
 }
 
