@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::thread::sleep;
 use fastrand;
 
+//TODO: Fix the add event tiles method so it adds the correct amount of snakes and ladders
 //TODO: Clean up start function, it is too large
 //TODO: Add tests
 //TODO: Add text input for making players
