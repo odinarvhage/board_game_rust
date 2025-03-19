@@ -1,4 +1,7 @@
+mod test;
+
 use std::collections::HashMap;
+use std::thread::sleep;
 use fastrand;
 
 //TODO: Clean up start function, it is too large
@@ -13,8 +16,9 @@ use fastrand;
     */
 fn main() {
     let mut player_list: Vec<Player> = Vec::new();
-    player_list.push(Player::new("Nick".to_string(), "Hat".to_string()));
+    player_list.push(Player::new("Ville".to_string(), "Hat".to_string()));
     player_list.push(Player::new("Odin".to_string(), "Car".to_string()));
+    player_list.push(Player::new("Storm".to_string(), "Dog".to_string()));
     start(&mut player_list, 100, 10, 10);
 }
 
@@ -56,6 +60,7 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
             }
             println!("{} is now at position {}", player.get_username(), player.get_position());
             println!("\n");
+            sleep(std::time::Duration::from_secs(1));
         }
     }
 }
