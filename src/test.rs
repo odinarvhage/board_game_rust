@@ -35,14 +35,16 @@ mod tests {
     fn test_add_snake_tiles() {
         let mut board = crate::Board::new(100);
         board.add_event_tiles(10, 2);
-        assert_eq!(10, board.board.values().filter(|&&x| x == 2).count() as u32);
+        let snake_count = board.board.values().filter(|&&x| x == 2).count() as u32;
+        assert_eq!(10, snake_count, "Expected 10 snake tiles, but found {}", snake_count);
     }
-
     #[test]
     fn test_add_ladder_tiles() {
         let mut board = crate::Board::new(100);
         board.add_event_tiles(10, 1);
-        assert_eq!(10, board.board.values().filter(|&&x| x == 1).count() as u32);
+        let ladder_count = board.board.values().filter(|&&x| x == 1).count() as u32;
+        assert_eq!(10, ladder_count, "Expected 10 ladder tiles, but found {}", ladder_count);
+        assert_ne!(0, ladder_count,"Expected !0 ladder tiles, but found {}", ladder_count);
     }
 
     #[test]
