@@ -1,8 +1,6 @@
 mod test;
-
-use fastrand;
-use std::collections::HashMap;
-use std::thread::sleep;
+use std::collections::{BTreeMap, HashMap};
+use eframe::egui;
 
 //TODO: Clean up start function, it is too large
 //TODO: Add text input for making players
@@ -13,12 +11,14 @@ use std::thread::sleep;
 * The main function creates a vector of players and adds two players to the list.
 * The start function is then called with the player list, the size of the board, the number of snakes, and the number of ladders.
 */
-fn main() {
-    let mut player_list: Vec<Player> = Vec::new();
-    player_list.push(Player::new("Ville".to_string(), "Hat".to_string()));
-    player_list.push(Player::new("Odin".to_string(), "Car".to_string()));
-    player_list.push(Player::new("Storm".to_string(), "Dog".to_string()));
-    start(&mut player_list, 100, 10, 10);
+fn main() -> Result<(), eframe::Error> {
+    let board = make_board(100,10,10);
+    let options = eframe::NativeOptions::default();
+    eframe::run_native(
+        "SNAKE-GAME", // Window title
+        options,
+        Box::new(|_cc| Ok(Box::new(board))),
+    )
 }
 
 /**
@@ -58,7 +58,6 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
             }
             println!("{} is now at position {}", player.username, player.position);
             println!("\n");
-            sleep(std::time::Duration::from_secs(1));
         }
     }
 }
@@ -138,9 +137,23 @@ impl Player {
  * The board is initialized with a size and all tiles are set to STANDARD.
  * A value of 0 means standard, 1 means ladder, and 2 means snake.
  */
+
+#[derive(Default)]
 struct Board {
-    board: HashMap<u32, u32>,
+    board: BTreeMap<u32, u32>,
 }
+impl eframe::App for Board {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::CentralPanel::default().show(ctx, |ui| {
+            for (key, value) in &self.board {
+                let entry = format!("pos {}, tileType: {}", key, value); // Format the tuple into a String
+                ui.label(entry); // Pass the String to the label
+            }
+        });
+    }
+}
+
+
 
 /**
  * The Board struct has a new function that takes a u32 representing the size of the board and returns a new Board with the given size.
@@ -149,14 +162,16 @@ struct Board {
  * The function randomly places the specified number of tiles on the board.
  */
 impl Board {
+
     /**
      * The new function takes a u32 representing the size of the board and returns a new Board with the given size.
      */
     fn new(size: u32) -> Board {
-        let mut board = HashMap::new();
+        let mut board = BTreeMap::new();
         for i in 1..size {
             board.insert(i, 0);
         }
+
         Board { board }
     }
     /**
