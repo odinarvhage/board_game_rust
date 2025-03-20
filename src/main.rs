@@ -168,21 +168,21 @@ impl Board {
         if self.board.is_empty() {
             println!("Board is empty. Please add tiles first.");
         } else {
-            let positions: Vec<u32> = (0..self.board.len() as u32)
-                .filter_map(|_| {
-                    let random_number = fastrand::u32(0..self.board.len() as u32);
-                    if random_number == 1 || random_number == self.board.len() as u32 {
-                        None
-                    } else {
-                        Some(random_number)
-                    }
-                })
-                .take(amount_to_add as usize)
-                .collect();
+            let mut counter: u32 = 0;
+            while counter < amount_to_add {
+                let position = fastrand::u32(0..self.board.len() as u32);
+                if self.board.get(&position) == Some(&1) || self.board.get(&position) == Some(&2) {
+                    continue
+                } else {
+                    self.board.insert(position, tile_type);
+                    counter += 1;
+                }
 
-            for pos in positions {
-                self.board.insert(pos, tile_type);
+                }
+
             }
+
+
         }
-    }
+
 }
