@@ -1,5 +1,5 @@
 mod test;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use eframe::egui;
 use std::io;
 
@@ -18,27 +18,47 @@ fn main() {
     start(&mut player_list.get_players(), board);
 }
 
-
+/**
+ * The PlayerList struct represents a list of players in the game.
+ * It has a vector of players.
+ * The new function creates a new PlayerList with an empty vector of players.
+ * The add_player function adds a new player to the player list.
+ * The get_players function returns the list of players.
+ */
 struct PlayerList {
     players: Vec<Player>,
 }
 
+/**
+ * The PlayerList struct represents a list of players in the game.
+ * It has a vector of players.
+ * The new function creates a new PlayerList with an empty vector of players.
+ * The add_player function adds a new player to the player list.
+ * The get_players function returns the list of players.
+ */
 impl PlayerList {
+    /**
+     * The new function creates a new PlayerList with an empty vector of players.
+     * The add_player function adds a new player to the player list.
+     * The get_players function returns the list of players.
+     */
     fn new() -> PlayerList {
         PlayerList {
             players: Vec::new(),
         }
     }
 
+    /**
+     * The add_player function adds a new player to the player list.
+     */
     fn add_player(&mut self) {
         let player = Player::new();
         self.players.push(player);
     }
 
-    fn remove_player(&mut self, player: Player) {
-        self.players.retain(|x| x.username != player.username);
-    }
-
+    /**
+     * The get_players function returns the list of players.
+     */
     fn get_players(self) -> Vec<Player> {
         self.players
     }
@@ -114,7 +134,6 @@ fn make_board(size: u32, snakes: u32, ladders: u32) -> Board {
 */
 struct Player {
     username: String,
-    piece: String,
     position: u32,
 }
 
@@ -135,31 +154,14 @@ impl Player {
         io::stdin().read_line(&mut piece_input).expect("Failed to read line");
         Player {
             username: name_input,
-            piece: piece_input,
             position: 0,
         }
     }
 
-    /**
-     * The get_position function returns the player's current position on the board.
-     */
-    fn set_position(&mut self, position: u32) {
-        self.position = position;
+    fn set_position(&mut self, new_position: u32) {
+        self.position = new_position;
     }
 
-    /*
-     * The set_username function takes a String representing the username of the player and sets the player's username to the given value.
-     */
-    fn set_username(&mut self, username: String) {
-        self.username = username;
-    }
-
-    /**
-     * The set_piece function takes a String representing the piece the player is using and sets the player's piece to the given value.
-     */
-    fn set_piece(&mut self, piece: String) {
-        self.piece = piece;
-    }
 }
 
 /**
