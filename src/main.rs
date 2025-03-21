@@ -4,7 +4,6 @@ use eframe::egui;
 use std::io;
 
 //TODO: Add text input for board size, snakes, and ladders
-//TODO: Start making the GUI with egui crate
 
 /**
 * The main function creates a vector of players and adds two players to the list.
@@ -175,6 +174,13 @@ impl Player {
 struct Board {
     board: BTreeMap<u32, u32>,
 }
+
+/**
+ * The board struct is a map of u32 to u32.
+ * The key represents the position on the board,and the value represents the type of tile.
+ * The board is initialized with a size and all tiles are set to STANDARD.
+ * A value of 0 means standard, 1 means ladder, and 2 means snake.
+ */
 impl eframe::App for Board {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
