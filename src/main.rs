@@ -1,9 +1,8 @@
 mod test;
 use std::collections::{BTreeMap, HashMap};
 use eframe::egui;
+use std::io;
 
-//TODO: Clean up start function, it is too large
-//TODO: Add text input for making players
 //TODO: Add text input for board size, snakes, and ladders
 //TODO: Start making the GUI with egui crate
 
@@ -11,16 +10,39 @@ use eframe::egui;
 * The main function creates a vector of players and adds two players to the list.
 * The start function is then called with the player list, the size of the board, the number of snakes, and the number of ladders.
 */
-fn main() -> Result<(), eframe::Error> {
+fn main() {
     let board = make_board(100,10,10);
-    let options = eframe::NativeOptions::default();
-    eframe::run_native(
-        "SNAKE-GAME", // Window title
-        options,
-        Box::new(|_cc| Ok(Box::new(board))),
-    )
+    let mut player_list = PlayerList::new();
+    player_list.add_player();
+    player_list.add_player();
+    start(&mut player_list.get_players(), board);
 }
 
+
+struct PlayerList {
+    players: Vec<Player>,
+}
+
+impl PlayerList {
+    fn new() -> PlayerList {
+        PlayerList {
+            players: Vec::new(),
+        }
+    }
+
+    fn add_player(&mut self) {
+        let player = Player::new();
+        self.players.push(player);
+    }
+
+    fn remove_player(&mut self, player: Player) {
+        self.players.retain(|x| x.username != player.username);
+    }
+
+    fn get_players(self) -> Vec<Player> {
+        self.players
+    }
+}
 /**
 * The start function is the main function that runs the game. It takes a mutable reference to a vector of players, the size of the board, the number of snakes, and the number of ladders.
 * The function loops through the player list and performs a turn for each player. The player rolls a die and moves that many spaces.
@@ -28,9 +50,8 @@ fn main() -> Result<(), eframe::Error> {
 * The game continues until a player reaches the end of the board.
 */
 
-fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
+fn start(player_list: &mut Vec<Player>, board: Board) {
     let mut winner = false;
-    let board = make_board(size, snakes, ladders);
     while !winner {
         for player in player_list.iter_mut() {
             println!("{} is at position {}", player.username, player.position);
@@ -41,6 +62,10 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
                 Some(2) => {
                     println!("{} has landed on a snake!", player.username);
                     let new_position = player.position - 5;
+                    if new_position >= 0 {
+                        player.set_position(0);
+                    }
+
                     player.set_position(new_position);
                 }
                 Some(1) => {
@@ -51,7 +76,7 @@ fn start(player_list: &mut Vec<Player>, size: u32, snakes: u32, ladders: u32) {
                 }
                 _ => {}
             }
-            if player.position >= size {
+            if player.position >= board.board.len() as u32 {
                 println!("{} has won the game!", player.username);
                 winner = true;
                 break;
@@ -101,10 +126,16 @@ struct Player {
 * A value of 0 means standard, 1 means ladder, and 2 means snake.
 */
 impl Player {
-    fn new(username: String, piece: String) -> Player {
+    fn new() -> Player {
+        let mut name_input = String::new();
+        println!("Enter the name of the player: ");
+        io::stdin().read_line(&mut name_input).expect("Failed to read line");
+        let mut piece_input = String::new();
+        println!("Enter the piece for the player: ");
+        io::stdin().read_line(&mut piece_input).expect("Failed to read line");
         Player {
-            username,
-            piece,
+            username: name_input,
+            piece: piece_input,
             position: 0,
         }
     }
